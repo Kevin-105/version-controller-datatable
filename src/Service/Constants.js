@@ -1,0 +1,1 @@
+export const URL ='https://registry.npmjs.org/-/v1'
