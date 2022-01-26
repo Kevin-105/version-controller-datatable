@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
 
-
+import { DEFAULT_PAGE_SIZE } from "./Service/Constants";
 import { getVersions } from "./Service/Versions";
 import SelectBox from './Components/SelectBox';
 import VersionPagination from './Components/VersionPagination';
@@ -30,11 +30,11 @@ const App = () => {
 
   const [versions, setVersions] = useState([]);
   const [selectedPage, setSelectedPage] = useState(0);
-  const [size, setSize] = useState(10);
+  const [size, setSize] = useState(DEFAULT_PAGE_SIZE);
   const [totalData, setTotalData] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [search, setPackage] = useState({ keyword: '', size: 10, from: 0, pageCount: 1 });
-  const [nowShowing, setNowShowing] = useState({ from: 1, to: 10 });
+  const [search, setPackage] = useState({ keyword: '', size: DEFAULT_PAGE_SIZE, from: 0, pageCount: 1 });
+  const [nowShowing, setNowShowing] = useState({ from: 1, to: DEFAULT_PAGE_SIZE });
   const [Headers, setHeaders] = useState([
     { Name: 'Package Name', isSorted: false, usedKey: 'name'}, 
     { Name: 'Version', isSorted: false, usedKey: 'version'}, 
@@ -47,7 +47,7 @@ const App = () => {
   }, []);
 
   const handleShowing = (SIZE, FROM) => {
-    setNowShowing({...nowShowing, from: (FROM || 0) + 1, to: (FROM || 0) + (SIZE || 10) })
+    setNowShowing({...nowShowing, from: (FROM || 0) + 1, to: (FROM || 0) + (SIZE || DEFAULT_PAGE_SIZE) })
   };
 
   const getData = async function (e, KEYWORD, SIZE, FROM) {
@@ -122,10 +122,15 @@ const App = () => {
 
   };
 
+  const clearSearch = () => {
+    setPackage({...search, keyword: ''})
+    getData(undefined, '', size, search.from); 
+  }
+
   return (
    <React.Fragment>
      <Container fixed>
-        <SearchBox size={size} from={search.from} keyword={search.keyword} handleSearch={handleSearch} getData={getData} />
+        <SearchBox size={size} from={search.from} keyword={search.keyword} handleSearch={handleSearch} getData={getData} clearSearch={clearSearch} />
 
         { isLoading ? <Loader /> : 
           <TableContainer component={Paper}>
